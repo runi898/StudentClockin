@@ -20,6 +20,11 @@
 
 - `SUPABASE_URL`
 - `SUPABASE_SERVICE_ROLE_KEY`
+- `SUPABASE_PROJECT_REF`
+- `SUPABASE_ACCESS_TOKEN`
+- `SUPABASE_DB_PASSWORD`
+- `STUDENTCLOCKIN_SUPABASE_URL`
+- `STUDENTCLOCKIN_SUPABASE_ANON_KEY`
 
 ## Scheduled Jobs
 
@@ -35,3 +40,5 @@
 - Store media in Supabase Storage with lifecycle cleanup based on `expires_at`.
 - Keep `family_settings.timezone = Asia/Shanghai` for this MVP.
 - Enable email password recovery for parent accounts before public release.
+- On Windows, if local `npx supabase` cannot run the official binary package, deploy from Ubuntu/WSL or use [deploy-supabase.yml](/C:/Users/Administrator/Documents/Codex/2026-05-27/StudentClockin/.github/workflows/deploy-supabase.yml).
+- The GitHub Action uses the official `supabase/setup-cli` action and deploys migrations plus all three Edge Functions.

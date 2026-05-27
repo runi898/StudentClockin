@@ -1,0 +1,16 @@
+{
+  "name": "student-checkin-tooling",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Deployment tooling for the Student Check-in MVP",
+  "scripts": {
+    "supabase:version": "supabase --version",
+    "supabase:db:push": "supabase db push",
+    "supabase:functions:deploy": "supabase functions deploy daily-rollover && supabase functions deploy send-notifications && supabase functions deploy recalculate-reports",
+    "supabase:link": "supabase link",
+    "supabase:login": "supabase login"
+  },
+  "devDependencies": {
+    "supabase": "2.101.0"
+  }
+}

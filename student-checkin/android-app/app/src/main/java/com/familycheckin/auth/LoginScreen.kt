@@ -14,6 +14,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.familycheckin.BuildConfig
 
 @Composable
 fun LoginScreen(
@@ -37,6 +38,14 @@ fun LoginScreen(
         Text(
             text = "同一个 App 支持家长端和孩子端登录，数据统一保存在服务器。",
             style = MaterialTheme.typography.bodyMedium
+        )
+        Text(
+            text = if (BuildConfig.DEMO_MODE) {
+                "当前为演示模式，可直接体验交互；配置 Supabase 后即可切到真实服务器。"
+            } else {
+                "当前已配置服务器地址，可继续接入真实 Supabase 认证与数据。"
+            },
+            style = MaterialTheme.typography.bodySmall
         )
         OutlinedTextField(
             value = email.value,

@@ -1,3 +1,8 @@
+val supabaseUrlProvider = providers.gradleProperty("studentclockinSupabaseUrl")
+val supabaseAnonKeyProvider = providers.gradleProperty("studentclockinSupabaseAnonKey")
+val supabaseUrl = supabaseUrlProvider.orElse("https://demo.supabase.co").get()
+val supabaseAnonKey = supabaseAnonKeyProvider.orElse("demo-anon-key").get()
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -16,6 +21,13 @@ android {
         versionCode = 1
         versionName = "0.1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        buildConfigField("String", "SUPABASE_URL", "\"$supabaseUrl\"")
+        buildConfigField("String", "SUPABASE_ANON_KEY", "\"$supabaseAnonKey\"")
+        buildConfigField(
+            "boolean",
+            "DEMO_MODE",
+            if (supabaseUrlProvider.isPresent) "false" else "true"
+        )
     }
 
     compileOptions {
@@ -27,7 +39,10 @@ android {
         jvmTarget = "17"
     }
 
-    buildFeatures { compose = true }
+    buildFeatures {
+        compose = true
+        buildConfig = true
+    }
     composeOptions { kotlinCompilerExtensionVersion = "1.5.15" }
 }
 

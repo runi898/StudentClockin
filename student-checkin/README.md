@@ -34,6 +34,24 @@ Webhook notifications.
 3. Apply migrations under `supabase/migrations/`.
 4. Deploy the Edge Functions.
 
+Environment variables:
+
+- `STUDENTCLOCKIN_SUPABASE_URL`
+- `STUDENTCLOCKIN_SUPABASE_ANON_KEY`
+- `SUPABASE_PROJECT_REF`
+- `SUPABASE_ACCESS_TOKEN`
+- `SUPABASE_DB_PASSWORD`
+
+Template:
+
+- copy values from [.env.example](/C:/Users/Administrator/Documents/Codex/2026-05-27/StudentClockin/student-checkin/.env.example)
+
+Deployment helpers:
+
+- [scripts/build-debug-apk.ps1](/C:/Users/Administrator/Documents/Codex/2026-05-27/StudentClockin/student-checkin/scripts/build-debug-apk.ps1)
+- [scripts/deploy-supabase.ps1](/C:/Users/Administrator/Documents/Codex/2026-05-27/StudentClockin/student-checkin/scripts/deploy-supabase.ps1)
+- [.github/workflows/deploy-supabase.yml](/C:/Users/Administrator/Documents/Codex/2026-05-27/StudentClockin/.github/workflows/deploy-supabase.yml)
+
 ## Core Scheduled Jobs
 
 - `daily-rollover`: generate each Beijing-time day of occurrences
