@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>家长端混合方案 A+B</title>
+  <style>
+    :root {
+      --bg: #f8f4ec;
+      --paper: rgba(255,255,255,.84);
+      --ink: #17211e;
+      --muted: #677368;
+      --line: rgba(23,33,30,.1);
+      --accent: #cb5f39;
+      --accent-soft: rgba(203,95,57,.12);
+      --green: #2f6a52;
+      --green-soft: rgba(47,106,82,.12);
+      --gold: #ba8a2e;
+      --gold-soft: rgba(186,138,46,.15);
+      --navy: #32516b;
+      --navy-soft: rgba(50,81,107,.11);
+      --shadow: 0 26px 70px rgba(35,29,22,.12);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", "PingFang SC", "Noto Sans SC", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 12% 12%, rgba(203,95,57,.11), transparent 28%),
+        radial-gradient(circle at 88% 10%, rgba(50,81,107,.14), transparent 24%),
+        linear-gradient(180deg, #fcfaf5 0%, #f1eadf 100%);
+    }
+    .shell {
+      width: min(1360px, calc(100vw - 36px));
+      margin: 0 auto;
+      padding: 28px 0 44px;
+    }
+    .hero {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      box-shadow: var(--shadow);
+      padding: 28px 30px;
+      margin-bottom: 22px;
+    }
+    .eyebrow {
+      display: inline-block;
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.76);
+      color: var(--muted);
+      font-size: 12px;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    h1 {
+      margin: 16px 0 8px;
+      font-size: clamp(30px, 4vw, 48px);
+      line-height: .96;
+      letter-spacing: -.05em;
+    }
+    .hero p {
+      margin: 0;
+      max-width: 58rem;
+      color: var(--muted);
+      line-height: 1.72;
+      font-size: 17px;
+    }
+    .panel {
+      background: rgba(255,255,255,.8);
+      border: 1px solid var(--line);
+      border-radius: 30px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .workspace {
+      padding: 18px;
+    }
+    .chrome {
+      height: 58px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, rgba(23,33,30,.96), rgba(47,106,82,.9));
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      margin-bottom: 12px;
+      font-size: 13px;
+    }
+    .layout {
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      gap: 12px;
+      min-height: 720px;
+    }
+    .sidebar,
+    .content {
+      display: grid;
+      gap: 10px;
+      align-content: start;
+    }
+    .sidebar-card,
+    .stat-card,
+    .detail-card,
+    .task-row {
+      background: #fff;
+      border: 1px solid rgba(23,33,30,.08);
+      border-radius: 20px;
+    }
+    .sidebar-card {
+      padding: 14px;
+    }
+    .tiny {
+      font-size: 10px;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+    .sidebar-card.active {
+      border-color: rgba(50,81,107,.18);
+      background: rgba(50,81,107,.08);
+    }
+    .sidebar-card strong {
+      display: block;
+      font-size: 18px;
+      margin-bottom: 6px;
+    }
+    .sidebar-card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.55;
+    }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      gap: 14px;
+    }
+    .header h2 {
+      margin: 0;
+      font-size: 28px;
+      letter-spacing: -.04em;
+    }
+    .header span {
+      color: var(--muted);
+      font-size: 14px;
+    }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .stat-card {
+      padding: 18px 18px 16px;
+      min-height: 118px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .stat-card.active {
+      border-color: rgba(203,95,57,.22);
+      box-shadow: 0 0 0 2px rgba(203,95,57,.06) inset;
+    }
+    .stat-card strong {
+      display: block;
+      font-size: 18px;
+      margin-top: 4px;
+    }
+    .stat-card .value {
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: -.04em;
+    }
+    .stat-card .big {
+      font-size: 48px;
+      line-height: .95;
+      letter-spacing: -.06em;
+      font-weight: 800;
+    }
+    .stat-card .suffix {
+      color: var(--muted);
+      font-size: 14px;
+      margin-left: 6px;
+    }
+    .stat-card.today .big { color: var(--ink); }
+    .stat-card.pending .value { color: var(--accent); }
+    .stat-card.review .value { color: var(--gold); }
+    .detail-card {
+      padding: 16px;
+    }
+    .detail-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .detail-head h3 {
+      margin: 0;
+      font-size: 22px;
+      letter-spacing: -.03em;
+    }
+    .detail-head span {
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .task-list {
+      display: grid;
+      gap: 8px;
+    }
+    .task-row {
+      padding: 12px 14px;
+      display: grid;
+      gap: 8px;
+      background: #fcfaf4;
+    }
+    .task-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+    .task-title {
+      font-size: 15px;
+      font-weight: 600;
+      line-height: 1.35;
+    }
+    .meta {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+    .badge {
+      padding: 5px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      white-space: nowrap;
+    }
+    .badge.pending { background: var(--accent-soft); color: var(--accent); }
+    .badge.review { background: var(--gold-soft); color: var(--gold); }
+    .badge.ok { background: var(--green-soft); color: var(--green); }
+    .trend {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+    }
+    .mini {
+      padding: 12px;
+      border-radius: 16px;
+      background: #fff;
+      border: 1px solid rgba(23,33,30,.08);
+    }
+    .mini strong {
+      display: block;
+      font-size: 18px;
+      margin-top: 4px;
+    }
+    .notes {
+      margin-top: 16px;
+      padding: 18px 20px 22px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      line-height: 1.72;
+    }
+    .notes strong {
+      color: var(--ink);
+    }
+    @media (max-width: 1024px) {
+      .layout { grid-template-columns: 1fr; }
+      .stats, .trend { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <section class="hero">
+      <div class="eyebrow">Hybrid A + B</div>
+      <h1>左侧孩子列表，右侧大卡片 + 详情联动</h1>
+      <p>
+        这版把你刚才那张图里的思路直接融进家长端：右侧先显示这个孩子最关键的 3 张大卡片，
+        比如 <strong>今天完成</strong>、<strong>待完成任务</strong>、<strong>待审核交付</strong>。点击其中一张卡片后，下面再切换成对应的详细任务列表或审核列表。
+      </p>
+    </section>
+
+    <section class="panel workspace">
+      <div class="chrome">
+        <span>Parent Console / 孩子工作台</span>
+        <span>当前：小宇 · 待处理 5 项</span>
+      </div>
+
+      <div class="layout">
+        <aside class="sidebar">
+          <div class="sidebar-card active">
+            <div class="tiny">孩子</div>
+            <strong>小宇</strong>
+            <p>今日 8 / 12 · 待完成 4 · 待审核 1</p>
+          </div>
+          <div class="sidebar-card">
+            <div class="tiny">孩子</div>
+            <strong>小宁</strong>
+            <p>今日 7 / 9 · 待完成 2 · 视频交付 1</p>
+          </div>
+          <div class="sidebar-card">
+            <div class="tiny">孩子</div>
+            <strong>小安</strong>
+            <p>今日 6 / 7 · 已基本完成 · 待审核 0</p>
+          </div>
+        </aside>
+
+        <section class="content">
+          <div class="header">
+            <div>
+              <div class="tiny">当前孩子视图</div>
+              <h2>小宇的今日情况</h2>
+            </div>
+            <span>点击卡片切换下方详情</span>
+          </div>
+
+          <div class="stats">
+            <div class="stat-card today">
+              <div class="tiny">今天</div>
+              <strong><span class="big">8</span><span class="suffix">/ 12</span></strong>
+              <div class="meta">今天已完成 8 项任务</div>
+            </div>
+            <div class="stat-card pending active">
+              <div class="tiny">待完成任务</div>
+              <div class="value">4 项</div>
+              <div class="meta">点击后显示未完成任务详细列表</div>
+            </div>
+            <div class="stat-card review">
+              <div class="tiny">待审核交付</div>
+              <div class="value">1 项</div>
+              <div class="meta">点击后显示待审核的照片/视频/音频</div>
+            </div>
+          </div>
+
+          <div class="detail-card">
+            <div class="detail-head">
+              <div>
+                <div class="tiny">当前展开</div>
+                <h3>待完成任务详情</h3>
+              </div>
+              <span>默认显示未完成，已完成单独折叠</span>
+            </div>
+
+            <div class="task-list">
+              <div class="task-row">
+                <div class="task-top">
+                  <div class="task-title">数学口算 15 分钟</div>
+                  <span class="badge pending">待完成</span>
+                </div>
+                <div class="meta">18:00 · 照片交付 · +2 分 · 尚未开始</div>
+              </div>
+
+              <div class="task-row">
+                <div class="task-top">
+                  <div class="task-title">英语跟读</div>
+                  <span class="badge review">待录音</span>
+                </div>
+                <div class="meta">19:10 · 音频交付 · +2 分 · 已到提醒时间</div>
+              </div>
+
+              <div class="task-row">
+                <div class="task-top">
+                  <div class="task-title">跳绳训练</div>
+                  <span class="badge pending">进行中</span>
+                </div>
+                <div class="meta">视频交付 · 已计时 08:12 · 完成后需上传视频</div>
+              </div>
+
+              <div class="task-row">
+                <div class="task-top">
+                  <div class="task-title">整理书包</div>
+                  <span class="badge pending">待完成</span>
+                </div>
+                <div class="meta">20:30 · 无交付 · +1 分</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="trend">
+            <div class="mini">
+              <div class="tiny">昨天</div>
+              <strong>10 / 12</strong>
+            </div>
+            <div class="mini">
+              <div class="tiny">近 7 天</div>
+              <strong>89%</strong>
+            </div>
+            <div class="mini">
+              <div class="tiny">近 30 天</div>
+              <strong>92%</strong>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <div class="notes">
+        <strong>这版的交互逻辑：</strong>
+        左侧先选孩子，右侧先看大卡片概览；点击 <strong>待完成任务</strong> 就看未完成列表，点击 <strong>待审核交付</strong> 就把下方切成审核列表，点击 <strong>今天 8/12</strong> 则切到完整完成情况页。
+      </div>
+    </section>
+  </main>
+</body>
+</html>

@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Check-in 正式版方向板</title>
+  <style>
+    :root {
+      --bg: #f5f1e8;
+      --paper: rgba(255, 252, 246, 0.9);
+      --ink: #17211d;
+      --muted: #5d6a63;
+      --line: rgba(23, 33, 29, 0.12);
+      --accent: #bf4c2f;
+      --accent-soft: rgba(191, 76, 47, 0.12);
+      --green: #2f6b52;
+      --blue: #355c7d;
+      --gold: #a77b22;
+      --shadow: 0 24px 60px rgba(33, 29, 20, 0.1);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Segoe UI", "PingFang SC", "Noto Sans SC", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(191, 76, 47, 0.14), transparent 32%),
+        radial-gradient(circle at 85% 12%, rgba(53, 92, 125, 0.16), transparent 22%),
+        linear-gradient(180deg, #fbf8f1 0%, #f2ede3 55%, #ece5d7 100%);
+      color: var(--ink);
+      min-height: 100vh;
+    }
+
+    .shell {
+      width: min(1280px, calc(100vw - 40px));
+      margin: 0 auto;
+      padding: 32px 0 48px;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 24px;
+      align-items: stretch;
+      margin-bottom: 28px;
+    }
+
+    .hero-copy,
+    .hero-score {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(14px);
+    }
+
+    .hero-copy {
+      padding: 30px 32px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.65);
+      border: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 13px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 18px 0 10px;
+      font-size: clamp(34px, 5vw, 62px);
+      line-height: 0.95;
+      letter-spacing: -0.04em;
+      max-width: 9ch;
+    }
+
+    .lead {
+      margin: 0;
+      font-size: 18px;
+      line-height: 1.7;
+      color: var(--muted);
+      max-width: 44rem;
+    }
+
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 22px;
+    }
+
+    .pill {
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.75);
+      border: 1px solid var(--line);
+      font-size: 14px;
+      color: var(--ink);
+    }
+
+    .hero-score {
+      padding: 24px;
+      display: grid;
+      grid-template-rows: auto 1fr;
+      gap: 18px;
+    }
+
+    .score-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 12px;
+    }
+
+    .score-title h2 {
+      margin: 0;
+      font-size: 24px;
+      letter-spacing: -0.03em;
+    }
+
+    .score-title span {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .score-grid {
+      display: grid;
+      gap: 12px;
+    }
+
+    .score-item {
+      display: grid;
+      grid-template-columns: 100px 1fr auto;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .score-item:last-child {
+      border-bottom: none;
+    }
+
+    .score-item strong {
+      font-size: 15px;
+    }
+
+    .bar {
+      height: 8px;
+      border-radius: 999px;
+      background: rgba(23, 33, 29, 0.08);
+      overflow: hidden;
+    }
+
+    .bar > i {
+      display: block;
+      height: 100%;
+      border-radius: inherit;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+      margin-bottom: 28px;
+    }
+
+    .card {
+      background: rgba(255,255,255,0.78);
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      display: grid;
+      grid-template-rows: auto auto 1fr auto;
+      min-height: 760px;
+      position: relative;
+    }
+
+    .card.recommended {
+      border-color: rgba(191, 76, 47, 0.35);
+      box-shadow: 0 32px 70px rgba(191, 76, 47, 0.18);
+      transform: translateY(-8px);
+    }
+
+    .flag {
+      position: absolute;
+      top: 18px;
+      right: 18px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: var(--accent);
+      color: white;
+      font-size: 12px;
+      letter-spacing: 0.08em;
+    }
+
+    .card-top {
+      padding: 22px 22px 10px;
+    }
+
+    .card-top .kicker {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+    }
+
+    .card-top h3 {
+      margin: 8px 0 8px;
+      font-size: 30px;
+      letter-spacing: -0.04em;
+    }
+
+    .card-top p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.65;
+    }
+
+    .preview {
+      padding: 0 18px 18px;
+    }
+
+    .phone,
+    .desktop {
+      border-radius: 24px;
+      border: 1px solid rgba(23, 33, 29, 0.08);
+      background: #fdf9f2;
+      overflow: hidden;
+      margin-top: 12px;
+    }
+
+    .phone {
+      width: 100%;
+      aspect-ratio: 10 / 18.2;
+      padding: 12px;
+    }
+
+    .desktop {
+      aspect-ratio: 16 / 10;
+      padding: 14px;
+    }
+
+    .ui-head {
+      height: 54px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, rgba(23, 33, 29, 0.95), rgba(47, 107, 82, 0.88));
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 14px;
+      color: #fff;
+      font-size: 13px;
+    }
+
+    .ui-grid {
+      display: grid;
+      gap: 8px;
+    }
+
+    .ui-grid.tasks {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .ui-grid.web {
+      grid-template-columns: 180px 1fr 220px;
+      height: calc(100% - 64px);
+    }
+
+    .tile,
+    .panel,
+    .list-item {
+      border-radius: 18px;
+      background: #fff;
+      border: 1px solid rgba(23, 33, 29, 0.08);
+    }
+
+    .tile {
+      min-height: 118px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .tile .tiny,
+    .panel .tiny {
+      font-size: 11px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .tile h4,
+    .panel h4 {
+      margin: 6px 0 0;
+      font-size: 15px;
+      line-height: 1.35;
+    }
+
+    .accent-line {
+      height: 8px;
+      width: 58%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--accent), #e6bf76);
+    }
+
+    .panel {
+      padding: 12px;
+    }
+
+    .stack {
+      display: grid;
+      gap: 8px;
+    }
+
+    .list-item {
+      padding: 10px 12px;
+      min-height: 52px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .tag {
+      padding: 5px 9px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 11px;
+      white-space: nowrap;
+    }
+
+    .points {
+      font-size: 12px;
+      color: var(--green);
+      font-weight: 600;
+    }
+
+    .notes {
+      padding: 0 22px 16px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .notes h4 {
+      margin: 0;
+      font-size: 15px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+    }
+
+    .notes ul {
+      margin: 0;
+      padding-left: 18px;
+      color: var(--ink);
+      line-height: 1.7;
+    }
+
+    .decision {
+      margin: 0 22px 22px;
+      padding: 16px 18px;
+      border-radius: 20px;
+      background: rgba(255,255,255,0.72);
+      border: 1px solid var(--line);
+      line-height: 1.65;
+    }
+
+    .decision strong {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 15px;
+    }
+
+    .footer {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+
+    .footer-card {
+      background: rgba(255,255,255,0.72);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      padding: 22px;
+    }
+
+    .footer-card h3 {
+      margin: 0 0 10px;
+      font-size: 22px;
+    }
+
+    .footer-card p,
+    .footer-card li {
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    @media (max-width: 1080px) {
+      .hero,
+      .cards,
+      .footer {
+        grid-template-columns: 1fr;
+      }
+
+      .card {
+        min-height: auto;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .shell {
+        width: min(100vw - 24px, 100%);
+        padding-top: 18px;
+      }
+
+      .hero-copy,
+      .hero-score,
+      .card,
+      .footer-card {
+        border-radius: 22px;
+      }
+
+      .ui-grid.tasks {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .ui-grid.web {
+        grid-template-columns: 1fr;
+      }
+
+      .phone,
+      .desktop {
+        aspect-ratio: auto;
+        min-height: 360px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <section class="hero">
+      <div class="hero-copy">
+        <div class="eyebrow">Release Board / V1.0 Open Source</div>
+        <h1>Student Check-in 正式版</h1>
+        <p class="lead">
+          目标不是把现在的演示页继续补补，而是直接演进成一套可开源、可 Docker 部署、可同时支持孩子安卓端与家长网页后台的正式产品。
+        </p>
+        <div class="pill-row">
+          <div class="pill">同一套账户体系</div>
+          <div class="pill">任务交付支持图像 / 视频 / 音频</div>
+          <div class="pill">家庭级积分与兑换规则</div>
+          <div class="pill">家长网页后台可选启用</div>
+        </div>
+      </div>
+      <aside class="hero-score">
+        <div class="score-title">
+          <h2>三条路线对比</h2>
+          <span>分数越高越适合直接开做</span>
+        </div>
+        <div class="score-grid">
+          <div class="score-item">
+            <strong>方案 A</strong>
+            <div class="bar"><i style="width:92%;background:linear-gradient(90deg,var(--accent),#e18f3d)"></i></div>
+            <span>9.2</span>
+          </div>
+          <div class="score-item">
+            <strong>方案 B</strong>
+            <div class="bar"><i style="width:74%;background:linear-gradient(90deg,var(--blue),#7a90b0)"></i></div>
+            <span>7.4</span>
+          </div>
+          <div class="score-item">
+            <strong>方案 C</strong>
+            <div class="bar"><i style="width:62%;background:linear-gradient(90deg,var(--gold),#c6a45d)"></i></div>
+            <span>6.2</span>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="cards">
+      <article class="card recommended">
+        <div class="flag">推荐</div>
+        <div class="card-top">
+          <div class="kicker">Direction A</div>
+          <h3>双端一致的产品化路线</h3>
+          <p>安卓 App 做完整体验，网页后台做运营与统计增强，视觉语言统一，直接面向开源发布。</p>
+        </div>
+        <div class="preview">
+          <div class="phone">
+            <div class="ui-head"><span>孩子端 / 12 任务一屏</span><span>积分 38</span></div>
+            <div class="ui-grid tasks">
+              <div class="tile"><div><div class="tiny">照片交付</div><h4>数学口算 15 分钟</h4></div><div class="accent-line"></div></div>
+              <div class="tile"><div><div class="tiny">视频交付</div><h4>跳绳训练</h4></div><div class="accent-line"></div></div>
+              <div class="tile"><div><div class="tiny">音频交付</div><h4>英语跟读</h4></div><div class="accent-line"></div></div>
+              <div class="tile"><div><div class="tiny">无交付</div><h4>整理书包</h4></div><div class="accent-line"></div></div>
+            </div>
+          </div>
+          <div class="desktop">
+            <div class="ui-head"><span>家长后台 / 今日总览</span><span>待审核 3</span></div>
+            <div class="ui-grid web">
+              <div class="panel stack">
+                <div class="tiny">导航</div>
+                <div class="list-item">今日任务</div>
+                <div class="list-item">积分兑换</div>
+                <div class="list-item">孩子周报</div>
+                <div class="list-item">通知配置</div>
+              </div>
+              <div class="panel stack">
+                <div class="tiny">主工作区</div>
+                <div class="list-item"><span>小宇 · 英语跟读</span><span class="tag">待审核</span></div>
+                <div class="list-item"><span>小宁 · 写字练习</span><span class="points">+2 分</span></div>
+                <div class="list-item"><span>本周效率趋势</span><span class="tag">更快 18%</span></div>
+              </div>
+              <div class="panel stack">
+                <div class="tiny">侧栏摘要</div>
+                <div class="list-item"><span>本月兑换</span><span>¥42</span></div>
+                <div class="list-item"><span>上传成功率</span><span>98%</span></div>
+                <div class="list-item"><span>通知渠道</span><span>钉钉/Webhook</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="notes">
+          <h4>特点</h4>
+          <ul>
+            <li>同一套后端能力同时服务安卓和网页，避免做两套逻辑。</li>
+            <li>孩子端强调轻盈、单屏可扫、交付动作自然进入拍照/录像/录音。</li>
+            <li>家长端网页强化统计、审核、筛选、通知配置，App 保留日常操作。</li>
+          </ul>
+        </div>
+        <div class="decision">
+          <strong>适合现在直接开做</strong>
+          这是最稳的正式版路线，既照顾你的真实使用，也适合未来开源给更多家庭部署。
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="card-top">
+          <div class="kicker">Direction B</div>
+          <h3>后端能力优先路线</h3>
+          <p>先把账号、媒体、审核、统计、通知都做完整，再给安卓和网页各铺一层较简 UI。</p>
+        </div>
+        <div class="preview">
+          <div class="desktop">
+            <div class="ui-head"><span>统一能力层</span><span>API / Storage / Jobs</span></div>
+            <div class="ui-grid web">
+              <div class="panel stack">
+                <div class="list-item">认证与家庭</div>
+                <div class="list-item">任务编排</div>
+                <div class="list-item">媒体存储</div>
+              </div>
+              <div class="panel stack">
+                <div class="list-item">审核流</div>
+                <div class="list-item">积分账本</div>
+                <div class="list-item">月报周报</div>
+              </div>
+              <div class="panel stack">
+                <div class="list-item">Webhook</div>
+                <div class="list-item">Docker 开关</div>
+                <div class="list-item">开放文档</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="notes">
+          <h4>特点</h4>
+          <ul>
+            <li>技术底子最扎实，后面扩展最快。</li>
+            <li>但短期观感最弱，UI 成品感会比方案 A 晚。</li>
+            <li>不太符合你现在就想看到漂亮、能直接用的产品期待。</li>
+          </ul>
+        </div>
+        <div class="decision">
+          <strong>更像平台工程路线</strong>
+          如果团队很多人一起做，这条路很舒服；但对你现在的目标来说不够“马上好用”。 
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="card-top">
+          <div class="kicker">Direction C</div>
+          <h3>网页后台主导路线</h3>
+          <p>先做强家长后台，再让安卓 App 变成偏轻量的孩子执行器。</p>
+        </div>
+        <div class="preview">
+          <div class="desktop">
+            <div class="ui-head"><span>运营后台优先</span><span>筛选 / 统计 / 审核</span></div>
+            <div class="ui-grid web">
+              <div class="panel stack">
+                <div class="list-item">家庭列表</div>
+                <div class="list-item">孩子档案</div>
+                <div class="list-item">模板库</div>
+              </div>
+              <div class="panel stack">
+                <div class="list-item">任务矩阵</div>
+                <div class="list-item">积分审批</div>
+                <div class="list-item">趋势报表</div>
+              </div>
+              <div class="panel stack">
+                <div class="list-item">系统设置</div>
+                <div class="list-item">通知规则</div>
+                <div class="list-item">部署开关</div>
+              </div>
+            </div>
+          </div>
+          <div class="phone">
+            <div class="ui-head"><span>孩子端</span><span>执行器</span></div>
+            <div class="stack">
+              <div class="list-item">开始任务</div>
+              <div class="list-item">上传交付</div>
+              <div class="list-item">查看积分</div>
+            </div>
+          </div>
+        </div>
+        <div class="notes">
+          <h4>特点</h4>
+          <ul>
+            <li>管理能力最强，适合机构化场景。</li>
+            <li>但孩子端容易被做成“附属端”，会牺牲日常使用质感。</li>
+            <li>与你强调的安卓主体验不完全一致。</li>
+          </ul>
+        </div>
+        <div class="decision">
+          <strong>不建议作为首发主线</strong>
+          除非目标用户以后主要是机构/学校，否则这条路会把重点放偏。
+        </div>
+      </article>
+    </section>
+
+    <section class="footer">
+      <div class="footer-card">
+        <h3>我的推荐</h3>
+        <p>
+          直接走 <strong>方案 A</strong>。它不是“演示页升级”，而是正式产品化路线：
+          先把同一套后端能力补齐，再用统一设计语言做出孩子端安卓体验和家长网页后台。
+        </p>
+      </div>
+      <div class="footer-card">
+        <h3>首发版本切片</h3>
+        <ul>
+          <li>统一注册 / 登录 / 家庭创建 / 孩子账号体系</li>
+          <li>真实照片 / 视频 / 音频交付上传与任务完成逻辑</li>
+          <li>积分、兑换、审核、周报、月报、通知配置</li>
+          <li>Docker 一键部署，网页后台可配置启用或关闭</li>
+        </ul>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>家长端工作台方案</title>
+  <style>
+    :root {
+      --bg: #f6f2e8;
+      --paper: rgba(255,255,255,.82);
+      --ink: #18211f;
+      --muted: #647066;
+      --line: rgba(24,33,31,.1);
+      --accent: #cb5d38;
+      --accent-soft: rgba(203,93,56,.12);
+      --green: #306851;
+      --green-soft: rgba(48,104,81,.12);
+      --navy: #31526d;
+      --navy-soft: rgba(49,82,109,.12);
+      --gold: #b8862f;
+      --gold-soft: rgba(184,134,47,.14);
+      --shadow: 0 26px 70px rgba(35,29,22,.12);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", "PingFang SC", "Noto Sans SC", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 12% 12%, rgba(203,93,56,.12), transparent 28%),
+        radial-gradient(circle at 90% 10%, rgba(49,82,109,.14), transparent 24%),
+        linear-gradient(180deg, #fbf8f2 0%, #f1eadf 100%);
+    }
+    .shell {
+      width: min(1320px, calc(100vw - 36px));
+      margin: 0 auto;
+      padding: 28px 0 44px;
+    }
+    .hero {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      box-shadow: var(--shadow);
+      padding: 28px 30px;
+      margin-bottom: 22px;
+    }
+    .eyebrow {
+      display: inline-block;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.76);
+      border: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 12px;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    h1 {
+      margin: 16px 0 8px;
+      font-size: clamp(30px, 4vw, 48px);
+      line-height: .96;
+      letter-spacing: -.05em;
+    }
+    .hero p {
+      margin: 0;
+      max-width: 54rem;
+      color: var(--muted);
+      font-size: 17px;
+      line-height: 1.72;
+    }
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+    }
+    .card {
+      background: rgba(255,255,255,.78);
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      min-height: 840px;
+      display: grid;
+      grid-template-rows: auto auto 1fr auto;
+      position: relative;
+    }
+    .card.recommended {
+      border-color: rgba(203,93,56,.3);
+      box-shadow: 0 30px 84px rgba(203,93,56,.18);
+      transform: translateY(-6px);
+    }
+    .flag {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: var(--accent);
+      color: white;
+      font-size: 12px;
+      letter-spacing: .08em;
+    }
+    .head {
+      padding: 22px 22px 10px;
+    }
+    .kicker {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      color: var(--muted);
+    }
+    .head h2 {
+      margin: 8px 0;
+      font-size: 28px;
+      letter-spacing: -.04em;
+    }
+    .head p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.66;
+    }
+    .preview {
+      padding: 0 18px 18px;
+    }
+    .desktop {
+      border-radius: 24px;
+      border: 1px solid rgba(24,33,31,.08);
+      background: #fcfaf4;
+      overflow: hidden;
+      aspect-ratio: 16 / 10.6;
+      padding: 14px;
+    }
+    .topbar {
+      height: 54px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, rgba(24,33,31,.96), rgba(48,104,81,.92));
+      margin-bottom: 10px;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 14px;
+      font-size: 13px;
+    }
+    .summary {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0,1fr));
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+    .box, .panel, .chip, .row, .mini-card {
+      background: #fff;
+      border: 1px solid rgba(24,33,31,.08);
+      border-radius: 16px;
+    }
+    .box {
+      padding: 10px 12px;
+    }
+    .tiny {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+    .box strong {
+      display: block;
+      font-size: 20px;
+      letter-spacing: -.04em;
+    }
+    .stack {
+      display: grid;
+      gap: 8px;
+    }
+    .layout-a {
+      display: grid;
+      gap: 10px;
+      height: calc(100% - 64px);
+    }
+    .children-strip {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0,1fr));
+      gap: 8px;
+    }
+    .chip {
+      padding: 12px;
+    }
+    .chip strong {
+      display: block;
+      font-size: 16px;
+      margin-bottom: 6px;
+    }
+    .chip p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+    .focus-grid {
+      display: grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap: 8px;
+      flex: 1;
+    }
+    .panel {
+      padding: 12px;
+      display: grid;
+      align-content: start;
+      gap: 8px;
+    }
+    .row {
+      min-height: 48px;
+      padding: 10px 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      background: #faf8f2;
+    }
+    .badge {
+      padding: 5px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      white-space: nowrap;
+    }
+    .badge.pending { background: var(--accent-soft); color: var(--accent); }
+    .badge.ok { background: var(--green-soft); color: var(--green); }
+    .badge.watch { background: var(--gold-soft); color: var(--gold); }
+    .layout-b {
+      display: grid;
+      grid-template-columns: 180px 1fr;
+      gap: 8px;
+      height: calc(100% - 64px);
+    }
+    .tabs {
+      display: grid;
+      gap: 8px;
+      align-content: start;
+    }
+    .tab {
+      padding: 12px;
+      border-radius: 16px;
+      border: 1px solid rgba(24,33,31,.08);
+      background: #fff;
+    }
+    .tab.active {
+      border-color: rgba(49,82,109,.22);
+      background: rgba(49,82,109,.08);
+    }
+    .detail {
+      display: grid;
+      gap: 8px;
+      align-content: start;
+    }
+    .layout-c {
+      display: grid;
+      gap: 8px;
+      height: calc(100% - 64px);
+    }
+    .matrix {
+      display: grid;
+      grid-template-columns: 1.1fr .9fr .9fr .9fr;
+      gap: 8px;
+      align-items: stretch;
+    }
+    .mini-card {
+      padding: 12px;
+    }
+    .mini-card strong {
+      display: block;
+      font-size: 18px;
+      margin-bottom: 6px;
+    }
+    .mini-card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.52;
+    }
+    .notes {
+      padding: 0 22px 16px;
+      display: grid;
+      gap: 10px;
+    }
+    .notes h3 {
+      margin: 0;
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--muted);
+    }
+    .notes ul {
+      margin: 0;
+      padding-left: 18px;
+      line-height: 1.74;
+    }
+    .decision {
+      margin: 0 22px 22px;
+      padding: 16px 18px;
+      border-radius: 20px;
+      background: rgba(255,255,255,.76);
+      border: 1px solid var(--line);
+      line-height: 1.65;
+    }
+    .decision strong {
+      display: block;
+      margin-bottom: 6px;
+    }
+    @media (max-width: 1080px) {
+      .cards { grid-template-columns: 1fr; }
+      .card { min-height: auto; }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <section class="hero">
+      <div class="eyebrow">Parent Console / Clarity Options</div>
+      <h1>家长端要直观看到每个孩子，但不能乱</h1>
+      <p>
+        家长端最容易做成“信息很多但不好扫”的后台。真正合适的做法，是让每个孩子都有可见度，但只把最需要处理的内容放到主区，把其他信息压缩成概览。
+      </p>
+    </section>
+
+    <section class="cards">
+      <article class="card recommended">
+        <div class="flag">推荐</div>
+        <div class="head">
+          <div class="kicker">Option A</div>
+          <h2>孩子概览条 + 焦点工作区</h2>
+          <p>顶上一排直接看到每个孩子的今日完成情况，下面主区只显示当前最需要处理的任务、审核和异常。</p>
+        </div>
+        <div class="preview">
+          <div class="desktop">
+            <div class="topbar"><span>Family Console</span><span>今天剩余 7 项 · 待审核 3</span></div>
+            <div class="summary">
+              <div class="box"><div class="tiny">今日总完成</div><strong>21 / 28</strong></div>
+              <div class="box"><div class="tiny">待完成</div><strong>7</strong></div>
+              <div class="box"><div class="tiny">昨天</div><strong>25 / 28</strong></div>
+              <div class="box"><div class="tiny">近 7 天</div><strong>88%</strong></div>
+            </div>
+            <div class="layout-a">
+              <div class="children-strip">
+                <div class="chip"><strong>小宇</strong><p>完成 8/12 · 待审核 1 · 平均更快 12%</p></div>
+                <div class="chip"><strong>小宁</strong><p>完成 7/9 · 待完成 2 · 今天有视频交付</p></div>
+                <div class="chip"><strong>小安</strong><p>完成 6/7 · 已全部交付 · 本周稳定</p></div>
+              </div>
+              <div class="focus-grid">
+                <div class="panel">
+                  <div class="tiny">当前最需要处理</div>
+                  <div class="row"><span>小宇 / 英语跟读</span><span class="badge pending">待审核</span></div>
+                  <div class="row"><span>小宁 / 数学口算</span><span class="badge watch">未完成</span></div>
+                  <div class="row"><span>小宇 / 积分兑换 20 分</span><span class="badge pending">待审批</span></div>
+                  <div class="row"><span>小安 / 今日全部完成</span><span class="badge ok">已完成</span></div>
+                </div>
+                <div class="panel">
+                  <div class="tiny">趋势摘要</div>
+                  <div class="row"><span>近 30 天</span><span>完成率 91%</span></div>
+                  <div class="row"><span>平均用时</span><span>下降 14%</span></div>
+                  <div class="row"><span>拖延最多</span><span>英语跟读</span></div>
+                  <div class="row"><span>通知状态</span><span>正常</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="notes">
+          <h3>优点</h3>
+          <ul>
+            <li>每个孩子都能第一眼看到，不会被藏起来。</li>
+            <li>主区只展示最该处理的内容，不会把页面堆满。</li>
+            <li>最适合 2 到 5 个孩子的家庭场景。</li>
+          </ul>
+        </div>
+        <div class="decision">
+          <strong>最平衡的正式版方案</strong>
+          既能快速扫每个孩子，又不会像报表后台一样杂乱。
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="head">
+          <div class="kicker">Option B</div>
+          <h2>左侧孩子标签页</h2>
+          <p>左边是孩子列表，右边只看当前选中的一个孩子，适合每次只想专注看一个孩子的家长。</p>
+        </div>
+        <div class="preview">
+          <div class="desktop">
+            <div class="topbar"><span>孩子详情模式</span><span>当前：小宇</span></div>
+            <div class="layout-b">
+              <div class="tabs">
+                <div class="tab active">小宇<br><small>8 / 12 完成</small></div>
+                <div class="tab">小宁<br><small>7 / 9 完成</small></div>
+                <div class="tab">小安<br><small>6 / 7 完成</small></div>
+              </div>
+              <div class="detail">
+                <div class="box"><div class="tiny">今天</div><strong>8 / 12</strong></div>
+                <div class="row"><span>待完成任务</span><span>4 项</span></div>
+                <div class="row"><span>待审核交付</span><span class="badge pending">1</span></div>
+                <div class="row"><span>近 7 天完成率</span><span>89%</span></div>
+                <div class="row"><span>近 30 天平均用时</span><span>下降 11%</span></div>
+                <div class="row"><span>今日未完成</span><span>数学口算 / 整理书包</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="notes">
+          <h3>优点</h3>
+          <ul>
+            <li>单个孩子的信息最完整、最干净。</li>
+            <li>适合逐个孩子细看。</li>
+            <li>移动端和平板端改造也容易。</li>
+          </ul>
+        </div>
+        <div class="decision">
+          <strong>更偏“详情页”思路</strong>
+          它很整洁，但第一眼不如方案 A 那样能同时扫到全部孩子。
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="head">
+          <div class="kicker">Option C</div>
+          <h2>孩子矩阵总览</h2>
+          <p>把每个孩子做成一张小面板并排展示，像总控台，适合孩子很多时快速横向比较。</p>
+        </div>
+        <div class="preview">
+          <div class="desktop">
+            <div class="topbar"><span>总览矩阵</span><span>3 个孩子</span></div>
+            <div class="summary">
+              <div class="box"><div class="tiny">家庭完成率</div><strong>75%</strong></div>
+              <div class="box"><div class="tiny">昨日</div><strong>89%</strong></div>
+              <div class="box"><div class="tiny">近 7 天</div><strong>88%</strong></div>
+              <div class="box"><div class="tiny">近 30 天</div><strong>91%</strong></div>
+            </div>
+            <div class="layout-c">
+              <div class="matrix">
+                <div class="mini-card"><strong>小宇</strong><p>8/12 完成<br>待审核 1<br>待完成 4</p></div>
+                <div class="mini-card"><strong>小宁</strong><p>7/9 完成<br>视频交付 1<br>待完成 2</p></div>
+                <div class="mini-card"><strong>小安</strong><p>6/7 完成<br>全部已交付<br>待完成 1</p></div>
+                <div class="mini-card"><strong>异常</strong><p>英语跟读拖延最多<br>2 次兑换待审</p></div>
+              </div>
+              <div class="panel">
+                <div class="tiny">统一异常列表</div>
+                <div class="row"><span>小宇 / 英语跟读</span><span class="badge pending">待审核</span></div>
+                <div class="row"><span>小宁 / 数学口算</span><span class="badge watch">未完成</span></div>
+                <div class="row"><span>小宇 / 积分兑换</span><span class="badge pending">待审批</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="notes">
+          <h3>优点</h3>
+          <ul>
+            <li>横向对比每个孩子最强。</li>
+            <li>适合以后孩子数量更多时扩展。</li>
+            <li>做周报/月报入口很自然。</li>
+          </ul>
+        </div>
+        <div class="decision">
+          <strong>更像运营总览</strong>
+          很适合后台，但日常频繁使用时会稍微更“系统化”一点。
+        </div>
+      </article>
+    </section>
+  </main>
+</body>
+</html>

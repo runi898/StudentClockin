@@ -1,0 +1,9 @@
+services:
+  studentclockin-proxy:
+    container_name: studentclockin-proxy
+    image: nginx:1.27-alpine
+    restart: unless-stopped
+    network_mode: host
+    volumes:
+      - ./nginx/supabase-8443.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./certs:/etc/nginx/certs:ro

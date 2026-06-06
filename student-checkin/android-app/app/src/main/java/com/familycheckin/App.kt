@@ -1,12 +1,12 @@
 package com.familycheckin
 
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import com.familycheckin.navigation.AppNavHost
+import com.familycheckin.ui.FamilyCheckinTheme
 
 @Composable
 fun App() {
-    MaterialTheme {
+    FamilyCheckinTheme {
         AppNavHost()
     }
 }

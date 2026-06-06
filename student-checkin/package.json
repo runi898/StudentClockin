@@ -6,7 +6,7 @@
   "scripts": {
     "supabase:version": "supabase --version",
     "supabase:db:push": "supabase db push",
-    "supabase:functions:deploy": "supabase functions deploy daily-rollover && supabase functions deploy send-notifications && supabase functions deploy recalculate-reports",
+    "supabase:functions:deploy": "supabase functions deploy daily-rollover && supabase functions deploy send-notifications && supabase functions deploy recalculate-reports && supabase functions deploy create-child-account",
     "supabase:link": "supabase link",
     "supabase:login": "supabase login"
   },

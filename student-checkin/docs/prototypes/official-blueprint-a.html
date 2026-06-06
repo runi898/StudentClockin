@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Check-in 正式版蓝图 A</title>
+  <style>
+    :root {
+      --bg: #f7f4ed;
+      --paper: rgba(255,255,255,0.82);
+      --ink: #16211d;
+      --muted: #617067;
+      --line: rgba(22, 33, 29, 0.1);
+      --accent: #d15c34;
+      --accent-soft: rgba(209, 92, 52, 0.12);
+      --green: #376a54;
+      --navy: #26455f;
+      --gold: #b5862f;
+      --shadow: 0 30px 80px rgba(35, 29, 22, 0.12);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", "PingFang SC", "Noto Sans SC", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 10% 12%, rgba(209, 92, 52, 0.12), transparent 28%),
+        radial-gradient(circle at 88% 10%, rgba(38, 69, 95, 0.14), transparent 24%),
+        linear-gradient(180deg, #fcfaf5 0%, #f3eee5 56%, #eee6d8 100%);
+      min-height: 100vh;
+    }
+    .shell {
+      width: min(1320px, calc(100vw - 40px));
+      margin: 0 auto;
+      padding: 28px 0 52px;
+    }
+    .hero {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 22px;
+      margin-bottom: 22px;
+    }
+    .panel {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 30px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(14px);
+    }
+    .hero-copy {
+      padding: 30px 32px;
+    }
+    .eyebrow {
+      display: inline-flex;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.72);
+      border: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 13px;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    h1 {
+      margin: 18px 0 10px;
+      font-size: clamp(34px, 5vw, 58px);
+      line-height: .95;
+      letter-spacing: -.05em;
+      max-width: 9ch;
+    }
+    .hero-copy p {
+      margin: 0;
+      font-size: 17px;
+      line-height: 1.72;
+      color: var(--muted);
+      max-width: 46rem;
+    }
+    .thesis {
+      margin-top: 22px;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0,1fr));
+      gap: 12px;
+    }
+    .thesis-card {
+      padding: 16px;
+      border-radius: 20px;
+      background: rgba(255,255,255,0.66);
+      border: 1px solid var(--line);
+    }
+    .thesis-card span {
+      display: block;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+    .thesis-card strong {
+      display: block;
+      font-size: 18px;
+      line-height: 1.35;
+    }
+    .hero-side {
+      padding: 24px;
+      display: grid;
+      gap: 14px;
+      align-content: start;
+    }
+    .hero-side h2 {
+      margin: 0 0 2px;
+      font-size: 24px;
+      letter-spacing: -.03em;
+    }
+    .stat {
+      padding: 14px 16px;
+      border-radius: 20px;
+      background: rgba(255,255,255,0.72);
+      border: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+    }
+    .stat b { font-size: 22px; }
+    .grid {
+      display: grid;
+      grid-template-columns: 1.08fr 0.92fr;
+      gap: 22px;
+      margin-bottom: 22px;
+    }
+    .section {
+      padding: 24px;
+    }
+    .section h2 {
+      margin: 0 0 8px;
+      font-size: 28px;
+      letter-spacing: -.04em;
+    }
+    .section > p {
+      margin: 0 0 18px;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+    .stack { display: grid; gap: 12px; }
+    .module {
+      padding: 16px 18px;
+      border-radius: 22px;
+      background: rgba(255,255,255,0.76);
+      border: 1px solid var(--line);
+    }
+    .module .label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+    .module h3 {
+      margin: 0 0 6px;
+      font-size: 20px;
+      letter-spacing: -.03em;
+    }
+    .module p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.65;
+    }
+    .flow {
+      display: grid;
+      gap: 12px;
+    }
+    .flow-row {
+      display: grid;
+      grid-template-columns: 120px 1fr 1fr;
+      gap: 12px;
+      align-items: stretch;
+    }
+    .flow-key,
+    .flow-box {
+      border-radius: 20px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.76);
+      padding: 14px;
+    }
+    .flow-key {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      color: var(--ink);
+    }
+    .flow-box small {
+      display: block;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      margin-bottom: 6px;
+      font-size: 10px;
+    }
+    .flow-box strong {
+      display: block;
+      font-size: 17px;
+      margin-bottom: 6px;
+    }
+    .flow-box p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.55;
+      font-size: 14px;
+    }
+    .duo {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      margin-bottom: 22px;
+    }
+    .workspace {
+      padding: 22px;
+    }
+    .workspace h2 {
+      margin: 0 0 8px;
+      font-size: 26px;
+      letter-spacing: -.04em;
+    }
+    .workspace p {
+      margin: 0 0 16px;
+      color: var(--muted);
+      line-height: 1.68;
+    }
+    .phone, .web {
+      border-radius: 24px;
+      border: 1px solid rgba(22,33,29,.08);
+      background: #fcfaf4;
+      overflow: hidden;
+      padding: 14px;
+    }
+    .phone { aspect-ratio: 10 / 18; }
+    .web { aspect-ratio: 16 / 10; }
+    .bar {
+      height: 54px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, rgba(22,33,29,.96), rgba(55,106,84,.9));
+      margin-bottom: 10px;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 14px;
+      font-size: 13px;
+    }
+    .tiles {
+      display: grid;
+      gap: 8px;
+    }
+    .tiles.phone-grid {
+      grid-template-columns: repeat(2, minmax(0,1fr));
+    }
+    .tiles.web-grid {
+      grid-template-columns: 200px 1fr 220px;
+      height: calc(100% - 64px);
+    }
+    .tile, .col {
+      border-radius: 18px;
+      background: #fff;
+      border: 1px solid rgba(22,33,29,.08);
+      padding: 12px;
+    }
+    .tile {
+      min-height: 116px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .tiny {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--muted);
+    }
+    .tile h4, .col h4 {
+      margin: 6px 0 0;
+      font-size: 15px;
+      line-height: 1.35;
+    }
+    .accent {
+      height: 8px;
+      width: 60%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--accent), #efb76e);
+    }
+    .col {
+      display: grid;
+      align-content: start;
+      gap: 8px;
+    }
+    .item {
+      min-height: 48px;
+      border-radius: 14px;
+      background: #faf8f2;
+      border: 1px solid rgba(22,33,29,.08);
+      padding: 10px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .tag {
+      padding: 5px 8px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 11px;
+    }
+    .summary-strip {
+      display: grid;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+    .summary-strip.triple {
+      grid-template-columns: repeat(3, minmax(0,1fr));
+    }
+    .summary-strip.double {
+      grid-template-columns: repeat(2, minmax(0,1fr));
+    }
+    .summary-box {
+      padding: 10px 12px;
+      border-radius: 16px;
+      background: #fff;
+      border: 1px solid rgba(22,33,29,.08);
+    }
+    .summary-box .tiny {
+      margin-bottom: 4px;
+    }
+    .summary-box strong {
+      display: block;
+      font-size: 22px;
+      line-height: 1;
+      letter-spacing: -.04em;
+    }
+    .summary-box span {
+      display: block;
+      margin-top: 4px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .trend-panel {
+      margin-bottom: 10px;
+      padding: 12px;
+      border-radius: 18px;
+      background: rgba(255,255,255,.82);
+      border: 1px solid rgba(22,33,29,.08);
+    }
+    .trend-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0,1fr));
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .trend-grid .item {
+      min-height: 64px;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: center;
+    }
+    .footer {
+      padding: 24px;
+    }
+    .footer h2 {
+      margin: 0 0 10px;
+      font-size: 26px;
+      letter-spacing: -.04em;
+    }
+    .footer ul {
+      margin: 0;
+      padding-left: 18px;
+      color: var(--muted);
+      line-height: 1.8;
+    }
+    @media (max-width: 1100px) {
+      .hero, .grid, .duo, .thesis {
+        grid-template-columns: 1fr;
+      }
+    }
+    @media (max-width: 760px) {
+      .shell { width: min(100vw - 22px, 100%); padding-top: 16px; }
+      .panel { border-radius: 22px; }
+      .flow-row, .tiles.web-grid { grid-template-columns: 1fr; }
+      .phone, .web { aspect-ratio: auto; min-height: 360px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <section class="hero">
+      <div class="panel hero-copy">
+        <div class="eyebrow">Blueprint / Direction A</div>
+        <h1>同一产品语言，双端统一成品</h1>
+        <p>
+          正式版不再把安卓和网页当成两套分裂系统，而是做成一套面向家庭场景的产品。
+          孩子端负责轻量执行，家长端负责布置、审核、统计与通知；两端共享同一套账户、任务、积分、媒体交付、报表与通知能力。
+        </p>
+        <div class="thesis">
+          <div class="thesis-card">
+            <span>Visual Thesis</span>
+            <strong>轻盈、温和、像学习工具而不是厚重管理台</strong>
+          </div>
+          <div class="thesis-card">
+            <span>Content Plan</span>
+            <strong>任务执行最突出，积分与反馈次之，统计与配置后置</strong>
+          </div>
+          <div class="thesis-card">
+            <span>Interaction Thesis</span>
+            <strong>开始动作要自然，交付动作要像系统相机/录音，不像表单</strong>
+          </div>
+        </div>
+      </div>
+      <aside class="panel hero-side">
+        <h2>首发正式版目标</h2>
+        <div class="stat"><span>安卓端</span><b>完整可用</b></div>
+        <div class="stat"><span>网页后台</span><b>可选启用</b></div>
+        <div class="stat"><span>部署方式</span><b>Docker 开关化</b></div>
+        <div class="stat"><span>开源导向</span><b>默认多家庭可用</b></div>
+      </aside>
+    </section>
+
+    <section class="grid">
+      <div class="panel section">
+        <h2>产品结构</h2>
+        <p>正式版拆成 5 个清晰模块，每个模块都有稳定边界，后面扩展时不会互相打架。</p>
+        <div class="stack">
+          <div class="module">
+            <div class="label">01 / Identity</div>
+            <h3>账户与家庭体系</h3>
+            <p>支持家长自助注册、管理员创建家长、家长添加孩子；孩子默认用户名 + PIN，也可邮箱 + 密码。</p>
+          </div>
+          <div class="module">
+            <div class="label">02 / Tasks</div>
+            <h3>任务与交付体系</h3>
+            <p>任务可配置直接打卡、倒计时、手动计时，并可配置无要求 / 照片 / 视频 / 音频交付，以及上传即完成或待家长审核。</p>
+          </div>
+          <div class="module">
+            <div class="label">03 / Points</div>
+            <h3>积分、兑换与账本</h3>
+            <p>自动积分、家长手动调整、孩子发起自定义积分兑换、家长审核、兑换比例与最低兑换门槛家庭级配置。</p>
+          </div>
+          <div class="module">
+            <div class="label">04 / Reporting</div>
+            <h3>日报 / 周报 / 月报</h3>
+            <p>按孩子、按任务、按时间维度输出完成率、平均用时、趋势变化、兑换行为与效率波动。</p>
+          </div>
+          <div class="module">
+            <div class="label">05 / Notify</div>
+            <h3>通知与部署开关</h3>
+            <p>支持钉钉 Webhook 与通用 Webhook；网页后台模块在 Docker 中可开启或关闭，不影响安卓端主流程。</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel section">
+        <h2>核心数据流</h2>
+        <p>这条流是正式版的主骨架，孩子端体验和家长端后台都围绕它展开。</p>
+        <div class="flow">
+          <div class="flow-row">
+            <div class="flow-key">步骤 1</div>
+            <div class="flow-box">
+              <small>孩子端</small>
+              <strong>开始任务</strong>
+              <p>根据任务模式开始计时或直接进入交付动作。</p>
+            </div>
+            <div class="flow-box">
+              <small>家长端</small>
+              <strong>提前配置规则</strong>
+              <p>设置时间、交付条件、积分、审核方式、提醒方式。</p>
+            </div>
+          </div>
+          <div class="flow-row">
+            <div class="flow-key">步骤 2</div>
+            <div class="flow-box">
+              <small>孩子端</small>
+              <strong>拍照 / 录像 / 录音 / 相册选择</strong>
+              <p>交付动作直接调用系统能力，完成后自动上传。</p>
+            </div>
+            <div class="flow-box">
+              <small>后端</small>
+              <strong>保存媒体与提交记录</strong>
+              <p>存储文件、写入 submission、记录北京时间精确时间与保留期。</p>
+            </div>
+          </div>
+          <div class="flow-row">
+            <div class="flow-key">步骤 3</div>
+            <div class="flow-box">
+              <small>系统规则</small>
+              <strong>自动完成或转待审核</strong>
+              <p>按任务配置决定是立即完成发积分，还是进入家长审核队列。</p>
+            </div>
+            <div class="flow-box">
+              <small>家长端</small>
+              <strong>查看、审核、复盘</strong>
+              <p>能看交付内容、完成时间、耗时、积分变化，以及趋势报表。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="duo">
+      <div class="panel workspace">
+        <h2>孩子安卓端</h2>
+        <p>孩子端是正式版的主视觉舞台。首页不做厚重管理层，只做“今天要做什么、下一步怎么完成”。12 个任务默认仍然追求一屏可扫。</p>
+        <div class="phone">
+          <div class="bar"><span>今日任务 / 小宇</span><span>积分 38 · ¥7.6</span></div>
+          <div class="summary-strip triple">
+            <div class="summary-box">
+              <div class="tiny">今日完成</div>
+              <strong>8</strong>
+              <span>共 12 项</span>
+            </div>
+            <div class="summary-box">
+              <div class="tiny">待完成</div>
+              <strong>4</strong>
+              <span>还差 33%</span>
+            </div>
+            <div class="summary-box">
+              <div class="tiny">完成率</div>
+              <strong>67%</strong>
+              <span>北京时间今日</span>
+            </div>
+          </div>
+          <div class="trend-panel">
+            <div class="tiny">最近表现</div>
+            <div class="trend-grid">
+              <div class="item"><span>昨天</span><strong>10 / 12</strong></div>
+              <div class="item"><span>近 7 天</span><strong>89%</strong></div>
+              <div class="item"><span>近 30 天</span><strong>92%</strong></div>
+            </div>
+          </div>
+          <div class="tiles phone-grid">
+            <div class="tile"><div><div class="tiny">照片</div><h4>数学口算 15 分钟</h4></div><div class="accent"></div></div>
+            <div class="tile"><div><div class="tiny">视频</div><h4>跳绳训练</h4></div><div class="accent"></div></div>
+            <div class="tile"><div><div class="tiny">音频</div><h4>英语跟读</h4></div><div class="accent"></div></div>
+            <div class="tile"><div><div class="tiny">无要求</div><h4>整理书包</h4></div><div class="accent"></div></div>
+            <div class="tile"><div><div class="tiny">倒计时</div><h4>练字 20 分钟</h4></div><div class="accent"></div></div>
+            <div class="tile"><div><div class="tiny">停止计时</div><h4>阅读打卡</h4></div><div class="accent"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel workspace">
+        <h2>家长网页后台</h2>
+        <p>网页后台是“看全局、做配置、看统计”的工作台，不和孩子端抢注意力。它应该轻、密、清晰，而不是堆一页大卡片。</p>
+        <div class="web">
+          <div class="bar"><span>Family Console</span><span>审核 3 · 通知 2</span></div>
+          <div class="summary-strip double">
+            <div class="summary-box">
+              <div class="tiny">今日总进度</div>
+              <strong>21 / 28</strong>
+              <span>已完成 75%，剩余 7 项</span>
+            </div>
+            <div class="summary-box">
+              <div class="tiny">趋势总览</div>
+              <strong>近 7 天 88%</strong>
+              <span>近 30 天平均用时下降 14%</span>
+            </div>
+          </div>
+          <div class="tiles web-grid">
+            <div class="col">
+              <div class="tiny">导航</div>
+              <div class="item">今日任务</div>
+              <div class="item">交付审核</div>
+              <div class="item">积分兑换</div>
+              <div class="item">周报月报</div>
+              <div class="item">通知配置</div>
+            </div>
+            <div class="col">
+              <div class="tiny">主工作区</div>
+              <div class="item"><span>英语跟读 / 小宇</span><span class="tag">待审核</span></div>
+              <div class="item"><span>跳绳训练 / 小宁</span><span class="tag">已上传视频</span></div>
+              <div class="item"><span>今日待完成</span><span>7 项</span></div>
+              <div class="item"><span>昨天完成情况</span><span>25 / 28</span></div>
+            </div>
+            <div class="col">
+              <div class="tiny">辅助信息</div>
+              <div class="item"><span>兑换总额</span><span>¥42</span></div>
+              <div class="item"><span>媒体保留</span><span>30 天</span></div>
+              <div class="item"><span>钉钉通知</span><span>开启</span></div>
+              <div class="item"><span>Webhook</span><span>开启</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel footer">
+      <h2>首个正式版边界</h2>
+      <ul>
+        <li>不是先做一个“看起来像正式版”的演示壳，而是直接做真实可部署产品。</li>
+        <li>安卓端与网页后台共享同一后端与同一数据模型，不做双份业务逻辑。</li>
+        <li>媒体交付是正式版核心能力，不再允许用占位按钮代替。</li>
+        <li>网页后台默认可选启用，Docker 配置关闭时，安卓主系统仍可独立工作。</li>
+      </ul>
+    </section>
+  </main>
+</body>
+</html>
